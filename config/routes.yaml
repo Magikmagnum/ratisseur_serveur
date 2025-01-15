@@ -1,0 +1,12 @@
+controllers:
+    resource: /var/www/php/src/Controller/
+    type: attribute
+    prefix: /api/v1
+
+kernel:
+    resource: /var/www/php/src/Kernel.php
+    type: attribute
+
+security_login:
+    path: /api/v1/login
+    methods: [POST]

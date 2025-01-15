@@ -1,0 +1,41 @@
+<?php
+
+namespace App\Traits;
+
+use App\Helpers\HttpResponseHelper;
+use App\Exception\ValidationException;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+trait EntityCrudTrait
+{
+    public function creer(Request $request): array
+    {
+        $entity = $this->hydrateEntity($this->newEntity(), $request);
+        $this->entityHelper->save($entity, true);
+        return HttpResponseHelper::response(Response::HTTP_CREATED, $entity);
+    }
+
+    public function modifier(Request $request): array
+    {
+        $entity = $this->hydrateEntity($this->getEntity(), $request);
+        $this->entityHelper->save($entity);
+        return HttpResponseHelper::response(Response::HTTP_OK, $entity);
+    }
+
+    public function supprimer(): array
+    {
+        $entity = $this->getEntity();
+        $this->entityHelper->delete($entity);
+        return HttpResponseHelper::response(Response::HTTP_OK);
+    }
+
+    public function detail(): array
+    {
+        if (!$this->getUser()) {
+            throw new ValidationException([], Response::HTTP_FORBIDDEN);
+        }
+
+        return HttpResponseHelper::response(Response::HTTP_OK, $this->getEntity());
+    }
+}
