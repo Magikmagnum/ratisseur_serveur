@@ -2,10 +2,11 @@
 
 namespace App\Controller;
 
+use App\Services\Offre\OffresServices;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use App\Services\Offre\OffresServices;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('offres')]
