@@ -4,6 +4,7 @@ namespace App\Helpers;
 
 use App\Exception\HydrationException;
 use App\Exception\ValidationException;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
@@ -172,7 +173,7 @@ class EntityHelper
      * @param Request $request La requête HTTP
      * @return array Le tableau des données extraites
      */
-    public function parseJsonPayload(Request $request): array
+    public function parseJson(Request $request): array
     {
         $data = json_decode($request->getContent(), true);
 
@@ -183,6 +184,28 @@ class EntityHelper
          */
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new HydrationException('Invalid JSON: ' . json_last_error_msg());
+        }
+
+        return $data ?? [];
+    }
+
+
+
+    /**
+     * Parse le payload JSON de la requête.
+     *
+     * @param Request $request La requête HTTP
+     * @param array $criteria le tableau des index des fichiers à recuperer
+     * @return array Le tableau des données extraites
+     */
+    public function parseFromData(Request $request, array $criteria): array
+    {
+        $data = $request->request->all();
+        foreach ($criteria as $key) {
+            if (!$request->files->has($key)) {
+                throw new HydrationException("Missing file for key '$key'");
+            }
+            $data[$key] = $request->files->get($key);
         }
 
         return $data ?? [];

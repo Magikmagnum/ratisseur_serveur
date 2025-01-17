@@ -8,7 +8,7 @@ use App\DTO\AdresseDTO;
 use App\Entity\Adresse;
 use App\Helpers\EntityHelper;
 use App\Services\DTOServices;
-use App\Traits\EntityCrudTrait;
+use App\Traits\EntityCrudSingleTrait;
 use App\Repository\PaysRepository;
 use App\Helpers\HttpResponseHelper;
 use App\Repository\VilleRepository;
@@ -25,7 +25,7 @@ use Symfony\Component\HttpFoundation\Response;
 class AdresseServices extends AbstractController implements AdresseInterface
 {
     use EntityHydratorTrait;
-    use EntityCrudTrait;
+    use EntityCrudSingleTrait;
 
     private AdresseRepository $adresseRepository;
     private VilleServices $villeServices;

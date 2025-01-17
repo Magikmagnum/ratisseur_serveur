@@ -7,11 +7,11 @@ use App\Exception\ValidationException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-trait EntityCrudTrait
+trait EntityCrudSingleTrait
 {
     public function creer(Request $request): array
     {
-        $entity = $this->hydrateEntity($this->newEntity(), $request);
+        $entity = $this->hydrateEntity($this->getEntity(), $request);
         $this->entityHelper->save($entity, true);
         return HttpResponseHelper::response(Response::HTTP_CREATED, $entity);
     }
@@ -26,6 +26,10 @@ trait EntityCrudTrait
     public function supprimer(): array
     {
         $entity = $this->getEntity();
+        // Vérifier si la méthode beforeDeleteEntity existe et l'appeler
+        if (method_exists($this, 'beforeDeleteEntity')) {
+            $this->beforeDeleteEntity($entity);
+        }
         $this->entityHelper->delete($entity);
         return HttpResponseHelper::response(Response::HTTP_OK);
     }

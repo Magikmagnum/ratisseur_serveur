@@ -4,7 +4,7 @@ namespace App\Services\Identite;
 
 use App\Entity\Identite;
 use App\Helpers\EntityHelper;
-use App\Traits\EntityCrudTrait;
+use App\Traits\EntityCrudSingleTrait;
 use App\Traits\EntityHydratorTrait;
 use App\Services\Identite\IdentiteInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,22 +12,19 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class IdentiteServices extends AbstractController implements IdentiteInterface
 {
     use EntityHydratorTrait;
-    use EntityCrudTrait;
+    use EntityCrudSingleTrait;
 
     protected EntityHelper $entityHelper;
 
-    /**
-     * @param EntityHelper $entityHelper
-     */
     public function __construct(EntityHelper $entityHelper)
     {
         $this->entityHelper = $entityHelper;
     }
 
     /**
-     * @param \App\Entity\Identite $identite
+     * @param Identite $identite
      * @param array $data
-     * @return \App\Entity\Identite
+     * @return Identite
      */
     private function mapDataToEntity(Identite $identite, array $data): Identite
     {
@@ -64,14 +61,9 @@ class IdentiteServices extends AbstractController implements IdentiteInterface
     private function getEntity(): Identite
     {
         $identite = $this->getUser()->getIdentite();
+        if (!$identite) {
+            $identite = new Identite();
+        }
         return $identite;
-    }
-
-    /**
-     * @return Identite
-     */
-    private function newEntity(): Identite
-    {
-        return new Identite();
     }
 }

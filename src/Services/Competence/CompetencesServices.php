@@ -4,8 +4,10 @@ namespace App\Services\Competence;
 
 use App\Entity\Competences;
 use App\Helpers\EntityHelper;
+use App\Traits\EntityCrudListTrait;
 use App\Helpers\ImageUploadHelper;
 use App\Helpers\HttpResponseHelper;
+use App\Traits\EntityHydratorTrait;
 use App\Exception\ValidationException;
 use App\Repository\CompetencesRepository;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,6 +23,9 @@ enum MessageError: string
 
 class CompetencesServices extends AbstractController implements CompetenceInterface
 {
+    use EntityHydratorTrait;
+    use EntityCrudListTrait;
+
     const  CUSTOME_IMAGE_DIRECTORY = "images/competences";
     const  CUSTOME_IMAGE_NAME = "competences_";
 
@@ -37,49 +42,6 @@ class CompetencesServices extends AbstractController implements CompetenceInterf
         $this->ImageUploadHelper = $ImageUploadHelper;
         $this->competencesListeServices = $competencesListeServices;
         $this->entityHelper = $entityHelper;
-    }
-
-    public function creer(Request $request): array
-    {
-        $competence = $this->hydrateEntity(new Competences(), $request);
-
-        if ($validationErrors = $this->entityHelper->validate($competence)) {
-            throw new ValidationException($validationErrors, Response::HTTP_BAD_REQUEST);
-        }
-
-        $this->entityHelper->save($competence, true);
-        return HttpResponseHelper::response(Response::HTTP_CREATED, $competence);
-    }
-
-    public function modifier($id, Request $request): array
-    {
-        $competence = $this->hydrateEntity($this->competencesRepository->find($id), $request);
-
-        // Ici, nous vérifions si l'utilisateur actuel est autorisé à supprimer cette ressource
-        if (!$this->isGranted('EDIT', $competence)) {
-            throw new ValidationException([], Response::HTTP_FORBIDDEN);
-        }
-
-        if ($validationErrors = $this->entityHelper->validate($competence)) {
-            throw new ValidationException($validationErrors, Response::HTTP_BAD_REQUEST);
-        }
-
-        $this->entityHelper->save($competence);
-        return HttpResponseHelper::response(Response::HTTP_OK, $competence);
-    }
-
-    public function supprimer($id): array
-    {
-        $competence = $this->competencesRepository->find($id);
-
-        if (!$this->isGranted('DELETE', $competence)) {
-            throw new ValidationException([], Response::HTTP_FORBIDDEN);
-        }
-
-        $this->ImageUploadHelper->delete($competence->getEnseigne(), self::CUSTOME_IMAGE_DIRECTORY);
-        $this->entityHelper->delete($competence);
-
-        return HttpResponseHelper::response(Response::HTTP_OK);
     }
 
     public function listeUtilisateur(): array
@@ -106,24 +68,13 @@ class CompetencesServices extends AbstractController implements CompetenceInterf
         );
     }
 
-    public function detail(int $id): array
+    /**
+     * @param Competences $competence
+     * @param array $data
+     * @return Competences
+     */
+    private function mapDataToEntity(Competences $competence, array $data): Competences
     {
-        if (!$this->getUser()) {
-            throw new ValidationException([], Response::HTTP_FORBIDDEN);
-        }
-
-        return  HttpResponseHelper::response(
-            Response::HTTP_OK,
-            $this->competencesRepository->findOneBy(["id" => $id])
-        );
-    }
-
-
-    private function hydrateEntity(Competences $competence, Request $request): Competences
-    {
-        $data = $request->request->all();
-        $data['enseigne'] = $request->files->get('enseigne');
-
         // Assurez-vous que l'utilisateur est défini
         if (!$competence->getUser()) {
             $competence->setUser($this->getUser());
@@ -135,9 +86,9 @@ class CompetencesServices extends AbstractController implements CompetenceInterf
         }
 
         // Vérifie et assigne l'enseigne si présente
-        if ($data['enseigne']) {
+        if (isset($data['files']['enseigne'])) {
             $competence->setEnseigne(
-                $this->ImageUploadHelper->upload($data['enseigne'], self::CUSTOME_IMAGE_DIRECTORY, self::CUSTOME_IMAGE_NAME, $competence->getEnseigne() ?: null)
+                $this->ImageUploadHelper->upload($data['files']['enseigne'], self::CUSTOME_IMAGE_DIRECTORY, self::CUSTOME_IMAGE_NAME, $competence->getEnseigne() ?: null)
             );
         }
 
@@ -146,5 +97,28 @@ class CompetencesServices extends AbstractController implements CompetenceInterf
             $competence->setDescription($data['description']);
         }
         return $competence;
+    }
+
+
+    /**
+     * @param ?int $id L'identifiant de la compétence à retourner. Si null, retourne une nouvelle.
+     * @return Competences
+     */
+    private function getEntity(?int $id = null): Competences
+    {
+        if ($id === null) {
+            return new Competences();
+        }
+
+        $competence = $this->competencesRepository->findOneBy(["id" => $id]);
+        return $competence;
+    }
+
+    /**
+     * @return Competences
+     */
+    private function beforDeleteEntity(Competences $competence): void
+    {
+        $this->ImageUploadHelper->delete($competence->getEnseigne(), self::CUSTOME_IMAGE_DIRECTORY);
     }
 }
