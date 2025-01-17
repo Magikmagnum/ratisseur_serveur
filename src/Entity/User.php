@@ -88,12 +88,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['read:competence:list', 'read:competence:item'])]
     private ?Adresse $adresse = null;
 
+    /**
+     * @var Collection<int, Offres>
+     */
+    #[ORM\OneToMany(targetEntity: Offres::class, mappedBy: 'user', orphanRemoval: true)]
+    private Collection $offres;
+
     public function __construct()
     {
         $this->competences = new ArrayCollection();
         $this->formations = new ArrayCollection();
         $this->experiences = new ArrayCollection();
         $this->yes = new ArrayCollection();
+        $this->offres = new ArrayCollection();
     }
 
 
@@ -340,6 +347,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setAdresses(?Adresse $adresse): static
     {
         $this->adresse = $adresse;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Offres>
+     */
+    public function getOffres(): Collection
+    {
+        return $this->offres;
+    }
+
+    public function addOffre(Offres $offre): static
+    {
+        if (!$this->offres->contains($offre)) {
+            $this->offres->add($offre);
+            $offre->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOffre(Offres $offre): static
+    {
+        if ($this->offres->removeElement($offre)) {
+            // set the owning side to null (unless already changed)
+            if ($offre->getUser() === $this) {
+                $offre->setUser(null);
+            }
+        }
 
         return $this;
     }

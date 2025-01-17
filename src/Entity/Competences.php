@@ -43,11 +43,18 @@ class Competences
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $enseigne = null;
 
+    /**
+     * @var Collection<int, Offres>
+     */
+    #[ORM\OneToMany(targetEntity: Offres::class, mappedBy: 'competence', orphanRemoval: true)]
+    private Collection $offres;
+
     // Ajout du constructeur
     public function __construct()
     {
         $this->setCreatedAt(new \DateTimeImmutable());
         $this->realisations = new ArrayCollection();
+        $this->offres = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -154,6 +161,36 @@ class Competences
     public function setEnseigne(?string $enseigne): static
     {
         $this->enseigne = $enseigne;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Offres>
+     */
+    public function getOffres(): Collection
+    {
+        return $this->offres;
+    }
+
+    public function addOffre(Offres $offre): static
+    {
+        if (!$this->offres->contains($offre)) {
+            $this->offres->add($offre);
+            $offre->setCompetence($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOffre(Offres $offre): static
+    {
+        if ($this->offres->removeElement($offre)) {
+            // set the owning side to null (unless already changed)
+            if ($offre->getCompetence() === $this) {
+                $offre->setCompetence(null);
+            }
+        }
 
         return $this;
     }
