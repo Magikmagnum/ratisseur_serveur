@@ -69,12 +69,13 @@ class CompetencesServices extends AbstractController implements CompetenceInterf
     }
 
     /**
-     * @param Competences $competence
-     * @param array $data
-     * @return Competences
+     * @param Competences $competence L'entité de type Competences à hydrater
+     * @param array $data Le tableau des données à mapper
+     * @return Competences L'entité Competences hydratée
      */
-    private function mapDataToEntity(Competences $competence, array $data): Competences
+    public function mapDataToEntity(Competences $competence, array $data): Competences
     {
+
         // Assurez-vous que l'utilisateur est défini
         if (!$competence->getUser()) {
             $competence->setUser($this->getUser());
@@ -104,7 +105,7 @@ class CompetencesServices extends AbstractController implements CompetenceInterf
      * @param ?int $id L'identifiant de la compétence à retourner. Si null, retourne une nouvelle.
      * @return Competences
      */
-    private function getEntity(?int $id = null): Competences
+    public function getEntity(?int $id = null): Competences
     {
         if ($id === null) {
             return new Competences();
