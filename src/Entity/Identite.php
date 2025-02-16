@@ -26,11 +26,11 @@ class Identite
         choices: [true, false],
         message: "La valeur du champ 'sexe' doit être soit 'true' pour masculin, soit 'false' pour féminin."
     )]
-    #[Groups(['read:identite:item', 'read:competence:list'])]
+    #[Groups(['read:identite:item'])]
     private ?bool $sexe = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['read:identite:item', 'read:competence:list'])]
+    #[Groups(['read:identite:item'])]
     private ?\DateTimeImmutable $naissanceAt = null;
 
     #[ORM\Column(nullable: true)]

@@ -40,6 +40,6 @@ trait EntityCrudListTrait
             throw new ValidationException([], Response::HTTP_FORBIDDEN);
         }
 
-        return HttpResponseHelper::response(Response::HTTP_OK, $this->getEntity());
+        return HttpResponseHelper::response(Response::HTTP_OK, $this->getEntity($id));
     }
 }

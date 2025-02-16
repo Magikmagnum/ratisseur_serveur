@@ -14,15 +14,14 @@ class Adresse
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['read:identite:list', 'read:adresse:item', 'read:competence:list', 'read:competence:item'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['read:identite:list', 'read:adresse:item', 'read:competence:list', 'read:competence:item'])]
+    #[Groups(['read:adresse:item', 'read:competence:list', 'read:competence:item'])]
     private ?string $rue = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['read:identite:list', 'read:adresse:item', 'read:competence:list', 'read:competence:item'])]
+    #[Groups(['read:adresse:item', 'read:competence:list', 'read:competence:item'])]
     private ?int $appartement = null;
 
     #[ORM\ManyToOne(inversedBy: 'adresses')]
@@ -35,13 +34,13 @@ class Adresse
     private Collection $users;
 
 
-    #[Groups(['read:identite:list', 'read:adresse:item', 'read:competence:list', 'read:competence:item'])]
+    #[Groups(['read:adresse:item', 'read:competence:list', 'read:competence:item'])]
     private ?string $ville = null;
 
-    #[Groups(['read:identite:list', 'read:adresse:item', 'read:competence:list', 'read:competence:item'])]
+    #[Groups(['read:adresse:item', 'read:competence:list', 'read:competence:item'])]
     private ?string $pays = null;
 
-    #[Groups(['read:identite:list', 'read:adresse:item', 'read:competence:list', 'read:competence:item'])]
+    #[Groups(['read:adresse:item', 'read:competence:list', 'read:competence:item'])]
     private ?int $codePostal = null;
 
     /**

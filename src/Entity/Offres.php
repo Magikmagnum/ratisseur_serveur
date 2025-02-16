@@ -2,8 +2,9 @@
 
 namespace App\Entity;
 
-use App\Repository\OffresRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\OffresRepository;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: OffresRepository::class)]
 class Offres
@@ -11,6 +12,7 @@ class Offres
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['read:offre:list:user', 'read:competence:item'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'offres')]
@@ -19,9 +21,11 @@ class Offres
 
     #[ORM\ManyToOne(inversedBy: 'offres')]
     #[ORM\JoinColumn(nullable: false)]
+
     private ?competences $competence = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['read:offre:list:user', 'read:competence:item'])]
     private ?string $libelle = null;
 
     public function getId(): ?int

@@ -15,11 +15,11 @@ class Competences
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['read:competence:list', 'read:competence:item', 'read:competence:list:user'])]
+    #[Groups(['read:competence:list', 'read:competence:item', 'read:competence:list:user', 'read:competence:item'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'competences')]
-    #[Groups(['read:competence:list', 'read:competence:item', 'read:competence:list:user'])]
+    #[Groups(['read:competence:list', 'read:competence:item', 'read:competence:list:user', 'read:competence:item'])]
     private ?CompetencesListe $label = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -47,6 +47,8 @@ class Competences
      * @var Collection<int, Offres>
      */
     #[ORM\OneToMany(targetEntity: Offres::class, mappedBy: 'competence', orphanRemoval: true)]
+    #[Groups(['read:competence:item'])]
+
     private Collection $offres;
 
     // Ajout du constructeur

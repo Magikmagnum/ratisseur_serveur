@@ -70,8 +70,8 @@ class OffresServices extends AbstractController implements CompetenceInterface
             $offre->setUser($this->getUser());
         }
 
-        if (isset($data['competence'])) {
-            $competence = $this->competencesServices->getEntity($data['competence']);
+        if (isset($data['competence_id'])) {
+            $competence = $this->competencesServices->getEntity($data['competence_id']);
             $competence && $offre->setCompetence($competence);
         }
 

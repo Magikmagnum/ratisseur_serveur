@@ -19,7 +19,7 @@ class CompetencesListe
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: "Le champ 'label' ne doit pas être vide.")]
-    #[Groups(['read:competence:list', 'read:competence:item'])]
+    #[Groups(['read:competence:list', 'read:competence:item', 'read:competence:item'])]
     private ?string $label = null;
 
     #[ORM\Column]
