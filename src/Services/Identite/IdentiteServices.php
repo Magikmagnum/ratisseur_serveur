@@ -4,21 +4,33 @@ namespace App\Services\Identite;
 
 use App\Entity\Identite;
 use App\Helpers\EntityHelper;
-use App\Traits\EntityCrudSingleTrait;
+use App\Helpers\ImageUploadHelper;
 use App\Traits\EntityHydratorTrait;
+use App\Traits\EntityCrudSingleTrait;
 use App\Services\Identite\IdentiteInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+
+enum MessageError: string
+{
+    case NO_FILE = "No file uploaded";
+    case UPLOAD_FAILED = "File upload failed";
+}
 
 class IdentiteServices extends AbstractController implements IdentiteInterface
 {
     use EntityHydratorTrait;
     use EntityCrudSingleTrait;
 
+    const  CUSTOME_IMAGE_DIRECTORY = "images/identites";
+    const  CUSTOME_IMAGE_NAME = "identite_";
+
+    private ImageUploadHelper $ImageUploadHelper;
     protected EntityHelper $entityHelper;
 
-    public function __construct(EntityHelper $entityHelper)
+    public function __construct(EntityHelper $entityHelper, ImageUploadHelper $ImageUploadHelper)
     {
         $this->entityHelper = $entityHelper;
+        $this->ImageUploadHelper = $ImageUploadHelper;
     }
 
     /**
@@ -52,6 +64,13 @@ class IdentiteServices extends AbstractController implements IdentiteInterface
             );
         }
 
+        // Vérifie et assigne l'avatar si présente
+        if (isset($data['files']['avatar'])) {
+            $identite->setAvatar(
+                $this->ImageUploadHelper->upload($data['files']['avatar'], self::CUSTOME_IMAGE_DIRECTORY, self::CUSTOME_IMAGE_NAME, $identite->getAvatar() ?: null)
+            );
+        }
+
         return $identite;
     }
 
@@ -65,5 +84,15 @@ class IdentiteServices extends AbstractController implements IdentiteInterface
             $identite = new Identite();
         }
         return $identite;
+    }
+
+
+
+    /**
+     * @return Identite
+     */
+    private function beforDeleteEntity(Identite $identite): void
+    {
+        $this->ImageUploadHelper->delete($identite->getAvatar(), self::CUSTOME_IMAGE_DIRECTORY);
     }
 }

@@ -28,6 +28,9 @@ class Offres
     #[Groups(['read:offre:list:user', 'read:competence:item'])]
     private ?string $libelle = null;
 
+    #[ORM\OneToOne(mappedBy: 'offre', cascade: ['persist', 'remove'])]
+    private ?Notification $yes = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -65,6 +68,28 @@ class Offres
     public function setLibelle(string $libelle): static
     {
         $this->libelle = $libelle;
+
+        return $this;
+    }
+
+    public function getYes(): ?Notification
+    {
+        return $this->yes;
+    }
+
+    public function setYes(?Notification $yes): static
+    {
+        // unset the owning side of the relation if necessary
+        if ($yes === null && $this->yes !== null) {
+            $this->yes->setOffre(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($yes !== null && $yes->getOffre() !== $this) {
+            $yes->setOffre($this);
+        }
+
+        $this->yes = $yes;
 
         return $this;
     }

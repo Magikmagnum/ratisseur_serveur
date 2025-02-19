@@ -24,8 +24,6 @@ class OffresServices extends AbstractController implements CompetenceInterface
     private CompetencesServices $competencesServices;
     protected EntityHelper $entityHelper;
 
-
-
     public function __construct(OffresRepository $offresRepository, EntityHelper $entityHelper, CompetencesServices $competencesServices)
     {
         $this->offresRepository = $offresRepository;

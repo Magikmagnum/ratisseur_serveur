@@ -43,6 +43,10 @@ class Identite
     // #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'])]
     private ?User $user = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['read:identite:item'])]
+    private ?string $avatar = null;
+
     // Ajout du constructeur
     public function __construct()
     {
@@ -123,6 +127,18 @@ class Identite
     public function setUser(?User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getAvatar(): ?string
+    {
+        return $this->avatar;
+    }
+
+    public function setAvatar(?string $avatar): static
+    {
+        $this->avatar = $avatar;
 
         return $this;
     }

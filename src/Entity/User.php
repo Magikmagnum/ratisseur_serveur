@@ -23,6 +23,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
+    #[Assert\NotBlank(
+        message: "Le mot de passe ne peut pas être vide."
+    )]
     #[Assert\Email(
         message: "Cette adresse e-mail n'est pas valide."
     )]
