@@ -4,15 +4,14 @@ namespace App\Services\Competence;
 
 use App\Entity\Competences;
 use App\Helpers\EntityHelper;
-use App\Traits\EntityCrudListTrait;
 use App\Helpers\ImageUploadHelper;
 use App\Helpers\HttpResponseHelper;
+use App\Traits\EntityCrudListTrait;
 use App\Traits\EntityHydratorTrait;
 use App\Exception\ValidationException;
 use App\Repository\CompetencesRepository;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Services\Competence\CompetenceInterface;
+use App\Services\interfaces\ServiceListInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 enum MessageError: string
@@ -21,7 +20,10 @@ enum MessageError: string
     case UPLOAD_FAILED = "File upload failed";
 }
 
-class CompetencesServices extends AbstractController implements CompetenceInterface
+/**
+ * @implements ServiceListInterface<Competences>
+ */
+class CompetencesServices extends AbstractController implements ServiceListInterface
 {
     use EntityHydratorTrait;
     use EntityCrudListTrait;
@@ -73,7 +75,7 @@ class CompetencesServices extends AbstractController implements CompetenceInterf
      * @param array $data Le tableau des données à mapper
      * @return Competences L'entité Competences hydratée
      */
-    public function mapDataToEntity(Competences $competence, array $data): Competences
+    public function mapDataToEntity(object $competence, array $data): Competences
     {
 
         // Assurez-vous que l'utilisateur est défini
@@ -105,7 +107,7 @@ class CompetencesServices extends AbstractController implements CompetenceInterf
      * @param ?int $id L'identifiant de la compétence à retourner. Si null, retourne une nouvelle.
      * @return Competences
      */
-    public function getEntity(?int $id = null): Competences
+    public function getEntity(int $id = null): Competences
     {
         if ($id === null) {
             return new Competences();

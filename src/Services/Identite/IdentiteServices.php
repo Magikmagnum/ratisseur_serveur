@@ -5,9 +5,9 @@ namespace App\Services\Identite;
 use App\Entity\Identite;
 use App\Helpers\EntityHelper;
 use App\Helpers\ImageUploadHelper;
+use App\Services\interfaces\ServiceInterface;
 use App\Traits\EntityHydratorTrait;
 use App\Traits\EntityCrudSingleTrait;
-use App\Services\Identite\IdentiteInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 enum MessageError: string
@@ -16,7 +16,10 @@ enum MessageError: string
     case UPLOAD_FAILED = "File upload failed";
 }
 
-class IdentiteServices extends AbstractController implements IdentiteInterface
+/**
+ * @implements ServiceInterface<Identite>
+ */
+class IdentiteServices extends AbstractController implements ServiceInterface
 {
     use EntityHydratorTrait;
     use EntityCrudSingleTrait;
@@ -38,7 +41,7 @@ class IdentiteServices extends AbstractController implements IdentiteInterface
      * @param array $data
      * @return Identite
      */
-    private function mapDataToEntity(Identite $identite, array $data): Identite
+    public function mapDataToEntity(Object $identite, array $data): Identite
     {
         // Assurez-vous que l'utilisateur est défini
         if (!$identite->getUser()) {
@@ -77,7 +80,7 @@ class IdentiteServices extends AbstractController implements IdentiteInterface
     /**
      * @return Identite
      */
-    private function getEntity(): Identite
+    public function getEntity(): Identite
     {
         $identite = $this->getUser()->getIdentite();
         if (!$identite) {

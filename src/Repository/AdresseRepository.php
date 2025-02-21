@@ -18,7 +18,7 @@ class AdresseRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Adresse::class);
+    parent::__construct($registry, Adresse::class);
     }
 
 //    /**

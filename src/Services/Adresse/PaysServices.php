@@ -21,7 +21,13 @@ class PaysServices extends AbstractController
         $this->paysRepository = $paysRepository;
     }
 
-
+    /**
+     * Récupère ou crée une entité Pays en fonction des critères fournis.
+     *
+     * @param array $criteria Tableau contenant les champs `label` et `codePostal`.
+     * @throws \App\Exception\ValidationException Si les critères sont invalides.
+     * @return Pays L'entité Pays correspondante.
+     */
     public function getEntity(string $label): Pays
     {
         if (!$pays = $this->paysRepository->findOneBy(['label' => $label])) {

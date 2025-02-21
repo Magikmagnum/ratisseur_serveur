@@ -30,7 +30,7 @@ class VilleServices extends AbstractController
      *
      * @param array $criteria Tableau contenant les champs `label` et `codePostal`.
      * @throws \App\Exception\ValidationException Si les critères sont invalides.
-     * @return \App\Entity\Ville L'entité Ville correspondante.
+     * @return Ville L'entité Ville correspondante.
      */
     public function getEntity(array $criteria): Ville
     {
