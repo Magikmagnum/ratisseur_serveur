@@ -24,7 +24,6 @@ class VilleServices extends AbstractController
         $this->paysServices = $paysServices;
     }
 
-
     /**
      * Récupère ou crée une entité Ville en fonction des critères fournis.
      *

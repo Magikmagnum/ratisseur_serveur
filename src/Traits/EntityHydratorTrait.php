@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use App\Exception\HydrationException;
+use Symfony\Component\Console\Helper\Dumper;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 

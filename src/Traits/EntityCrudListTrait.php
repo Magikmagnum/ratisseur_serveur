@@ -11,6 +11,9 @@ trait EntityCrudListTrait
 {
     public function creer(Request $request): array
     {
+        // $data = json_decode($request->getContent(), true);
+        // dd($data); 
+        
         $entity = $this->hydrateEntity($this->getEntity(), $request);
         $this->entityHelper->save($entity, true);
         return HttpResponseHelper::response(Response::HTTP_CREATED, $entity);

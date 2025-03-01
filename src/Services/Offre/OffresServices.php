@@ -10,12 +10,12 @@ use App\Traits\EntityHydratorTrait;
 use App\Repository\OffresRepository;
 use App\Exception\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
-use App\Services\Competence\CompetenceInterface;
 use App\Services\Competence\CompetencesServices;
+use App\Services\Interfaces\ServiceListInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 
-class OffresServices extends AbstractController implements CompetenceInterface
+class OffresServices extends AbstractController implements ServiceListInterface
 {
     use EntityHydratorTrait;
     use EntityCrudListTrait;
@@ -61,7 +61,7 @@ class OffresServices extends AbstractController implements CompetenceInterface
      * @param array $data
      * @return Offres
      */
-    public function mapDataToEntity(Offres $offre, array $data): Offres
+    public function mapDataToEntity(Object $offre, array $data): Offres
     {
 
         if (!$offre->getUser()) {
@@ -85,7 +85,7 @@ class OffresServices extends AbstractController implements CompetenceInterface
      * @param ?int $id L'identifiant de la compétence à retourner. Si null, retourne une nouvelle.
      * @return Offres
      */
-    private function getEntity(?int $id = null): Offres
+    public function getEntity(?int $id = null): Offres
     {
         if ($id === null) {
             return new Offres();

@@ -2,9 +2,11 @@
 
 namespace App\Entity;
 
-use App\Repository\LocalisationRepository;
+use App\Entity\User;
+use App\Entity\Coords;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\LocalisationRepository;
 
 #[ORM\Entity(repositoryClass: LocalisationRepository::class)]
 class Localisation
@@ -19,7 +21,11 @@ class Localisation
 
     #[ORM\ManyToOne(inversedBy: 'localisations')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?coords $coord = null;
+    private ?Coords $coord = null;
+
+    #[ORM\ManyToOne(inversedBy: 'localisations')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
 
     public function getId(): ?int
     {
@@ -38,14 +44,26 @@ class Localisation
         return $this;
     }
 
-    public function getCoord(): ?coords
+    public function getCoord(): ?Coords
     {
         return $this->coord;
     }
 
-    public function setCoord(?coords $coord): static
+    public function setCoord(?Coords $coord): static
     {
         $this->coord = $coord;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }

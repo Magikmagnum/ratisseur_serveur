@@ -97,6 +97,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Offres::class, mappedBy: 'user', orphanRemoval: true)]
     private Collection $offres;
 
+    /**
+     * @var Collection<int, Localisation>
+     */
+    #[ORM\OneToMany(targetEntity: Localisation::class, mappedBy: 'user', orphanRemoval: true)]
+    private Collection $localisations;
+
     public function __construct()
     {
         $this->competences = new ArrayCollection();
@@ -104,6 +110,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->experiences = new ArrayCollection();
         $this->yes = new ArrayCollection();
         $this->offres = new ArrayCollection();
+        $this->localisations = new ArrayCollection();
     }
 
 
@@ -378,6 +385,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($offre->getUser() === $this) {
                 $offre->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Localisation>
+     */
+    public function getLocalisations(): Collection
+    {
+        return $this->localisations;
+    }
+
+    public function addLocalisation(Localisation $localisation): static
+    {
+        if (!$this->localisations->contains($localisation)) {
+            $this->localisations->add($localisation);
+            $localisation->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLocalisation(Localisation $localisation): static
+    {
+        if ($this->localisations->removeElement($localisation)) {
+            // set the owning side to null (unless already changed)
+            if ($localisation->getUser() === $this) {
+                $localisation->setUser(null);
             }
         }
 
