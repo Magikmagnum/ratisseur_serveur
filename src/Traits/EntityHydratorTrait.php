@@ -94,7 +94,6 @@ trait EntityHydratorTrait
         // Fichiers téléchargés
         $uploadedFiles = $this->getUploadedFiles($request);
 
-        // Fusionner les données
         return array_merge($jsonPayload, $formData, ['files' => $uploadedFiles]);
     }
 

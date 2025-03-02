@@ -39,9 +39,11 @@ class LocalisationServices extends AbstractController implements ServiceListInte
             throw new ValidationException([], Response::HTTP_FORBIDDEN);
         }
 
+        $locatisations  = $this->localisationRepository->findBy(['user' => $user]);
+
         return HttpResponseHelper::response(
             Response::HTTP_OK,
-            $this->localisationRepository->findBy(['user' => $user])
+            $this->normalizer($locatisations)
         );
     }
 
@@ -51,12 +53,14 @@ class LocalisationServices extends AbstractController implements ServiceListInte
             throw new ValidationException([], Response::HTTP_FORBIDDEN);
         }
 
+        $locatisations = $this->localisationRepository->findAllExcepteUser($user);
+
         return HttpResponseHelper::response(
             Response::HTTP_OK,
-            $this->localisationRepository->findAllExcepteUser($user)
+            $this->normalizer($locatisations)
+            
         );
     }
-
 
     /**
      * Mappe les données fournies dans une entité Localisation.
@@ -72,16 +76,22 @@ class LocalisationServices extends AbstractController implements ServiceListInte
             $localisation->setUser($this->getUser());
         }
 
+        $location = $data['location'];
+
+
         // Vérifie et assigne la rue si présente
-        if (isset($data['timestamp'])) {
-            $localisation->setTimestamp($data['timestamp']);
+        if (!empty($location['timestamp'])) {
+            $dateTime = new \DateTime();
+            $dateTime->setTimestamp($location['timestamp'] / 1000);
+            $localisation->setTimestamp($dateTime);
         }
 
+
         // Vérifie et assigne la coord et le le code postal si présente
-        if (isset($data['coord'])) {
-            $coord = $this->coordServices->getEntity($data['coord']);
+        if (isset($location['coords'])) {
+            $coord = $this->coordServices->getEntity($location['coords']);
             if ($coord) {
-                $localisation->setCoord($coord);
+                $localisation->setCoords($coord);
             }
         }
 
@@ -99,5 +109,22 @@ class LocalisationServices extends AbstractController implements ServiceListInte
 
         $competence = $this->localisationRepository->findOneBy(["id" => $id]);
         return $competence;
+    }
+
+    /**
+     * Transforme les résultats du repository en un format adapté au client.
+     *
+     * @param array $locations Liste des emplacements récupérés depuis le repository.
+     * @return array Tableau formaté contenant les emplacements sous la clé 'location'.
+     */
+    private function normalizer(array $locations): array
+    {
+        $formattedLocations = [];
+
+        foreach ($locations as $location) {
+            $formattedLocations[] = ['location' => $location];
+        }
+
+        return $formattedLocations;
     }
 }

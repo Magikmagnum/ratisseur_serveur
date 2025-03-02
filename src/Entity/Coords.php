@@ -6,6 +6,7 @@ use App\Repository\CoordsRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: CoordsRepository::class)]
 class Coords
@@ -13,33 +14,41 @@ class Coords
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['read:location:list', 'read:location:item'])]
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Groups(['read:location:list', 'read:location:item'])]
     private ?float $latitude = null;
 
     #[ORM\Column]
+    #[Groups(['read:location:list', 'read:location:item'])]
     private ?float $longitude = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['read:location:list', 'read:location:item'])]
     private ?float $altitude = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['read:location:list', 'read:location:item'])]
     private ?float $accuracy = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['read:location:list', 'read:location:item'])]
     private ?float $altitudeAccuracy = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['read:location:list', 'read:location:item'])]
     private ?float $heading = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['read:location:list', 'read:location:item'])]
     private ?float $speed = null;
 
     /**
      * @var Collection<int, Localisation>
      */
-    #[ORM\OneToMany(targetEntity: Localisation::class, mappedBy: 'coord')]
+    #[ORM\OneToMany(targetEntity: Localisation::class, mappedBy: 'coords')]
     private Collection $localisations;
 
     public function __construct()

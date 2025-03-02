@@ -7,6 +7,7 @@ use App\Entity\Coords;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\LocalisationRepository;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: LocalisationRepository::class)]
 class Localisation
@@ -14,17 +15,21 @@ class Localisation
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['read:location:list', 'read:location:item'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Groups(['read:location:list', 'read:location:item'])]
     private ?\DateTimeInterface $timestamp = null;
 
     #[ORM\ManyToOne(inversedBy: 'localisations')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Coords $coord = null;
+    #[Groups(['read:location:list', 'read:location:item'])]
+    private ?Coords $coords = null;
 
     #[ORM\ManyToOne(inversedBy: 'localisations')]
     #[ORM\JoinColumn(nullable: false)]
+    // #[Groups(['read:location:list', 'read:location:item'])]
     private ?User $user = null;
 
     public function getId(): ?int
@@ -44,14 +49,14 @@ class Localisation
         return $this;
     }
 
-    public function getCoord(): ?Coords
+    public function getCoords(): ?Coords
     {
-        return $this->coord;
+        return $this->coords;
     }
 
-    public function setCoord(?Coords $coord): static
+    public function setCoords(?Coords $coords): static
     {
-        $this->coord = $coord;
+        $this->coords = $coords;
 
         return $this;
     }

@@ -19,35 +19,35 @@ class LocalisationController extends AbstractController
     public function index(LocalisationServices $localisationServices): JsonResponse
     {
         $response =  $localisationServices->liste();
-        return $this->json($response, $response['status'], [], ['groups' => 'read:competence:list:user']);
+        return $this->json($response, $response['status'], [], ['groups' => 'read:location:list']);
     }
 
     #[Route('/user', name: 'localisation_user_index', methods: ['GET'])]
     public function index_user(LocalisationServices $localisationServices): JsonResponse
     {
         $response =  $localisationServices->listeUtilisateur();
-        return $this->json($response, $response['status'], [], ['groups' => 'read:competence:list:user']);
+        return $this->json($response, $response['status'], [], ['groups' => 'read:location:list']);
     }
 
     #[Route('/{id}', name: 'localisation_show', methods: ['GET'])]
     public function show($id, LocalisationServices $localisationServices): JsonResponse
     {
         $response = $localisationServices->detail($id);
-        return $this->json($response, $response["status"], [], ["groups" => "read:competence:item"]);
+        return $this->json($response, $response["status"], [], ["groups" => "read:location:list"]);
     }
 
     #[Route('', name: 'localisation_new', methods: ['POST'])]
     public function add(Request $request, LocalisationServices $localisationServices): JsonResponse
     {        
         $response = $localisationServices->creer($request);
-        return $this->json($response, $response["status"], [], ["groups" => "read:competence:item"]);
+        return $this->json($response, $response["status"], [], ["groups" => "read:location:list"]);
     }
 
-    #[Route('/{id}', name: 'localisation_edit', methods: ['POST'])]
+    #[Route('/{id}', name: 'localisation_edit', methods: ['PUT'])]
     public function edit($id, Request $request, LocalisationServices $localisationServices): JsonResponse
     {
         $response = $localisationServices->modifier($id, $request);
-        return $this->json($response, $response["status"], [], ["groups" => "read:competence:item"]);
+        return $this->json($response, $response["status"], [], ["groups" => "read:location:list"]);
     }
 
     #[Route('/{id}', name: 'localisation_delete', methods: ['DELETE'])]
