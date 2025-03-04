@@ -89,6 +89,7 @@
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^4.0",
+        "friendsofphp/php-cs-fixer": "*",
         "liip/test-fixtures-bundle": "^3.2",
         "phpunit/phpunit": "^9.5",
         "symfony/browser-kit": "7.2.*",

@@ -6,8 +6,9 @@ use App\Entity\Identite;
 use App\Helpers\EntityHelper;
 use App\Helpers\ImageUploadHelper;
 use App\Traits\EntityHydratorTrait;
+use App\Exception\HydrationException;
 use App\Traits\EntityCrudSingleTrait;
-use App\Services\Identite\IdentiteInterface;
+use App\Services\Interfaces\ServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 enum MessageError: string
@@ -16,7 +17,10 @@ enum MessageError: string
     case UPLOAD_FAILED = "File upload failed";
 }
 
-class IdentiteServices extends AbstractController implements IdentiteInterface
+/**
+ * @implements ServiceInterface<Identite>
+ */
+class IdentiteServices extends AbstractController implements ServiceInterface
 {
     use EntityHydratorTrait;
     use EntityCrudSingleTrait;
@@ -38,7 +42,7 @@ class IdentiteServices extends AbstractController implements IdentiteInterface
      * @param array $data
      * @return Identite
      */
-    private function mapDataToEntity(Identite $identite, array $data): Identite
+    public function mapDataToEntity(Object $identite, array $data): Identite
     {
         // Assurez-vous que l'utilisateur est défini
         if (!$identite->getUser()) {
@@ -77,12 +81,18 @@ class IdentiteServices extends AbstractController implements IdentiteInterface
     /**
      * @return Identite
      */
-    private function getEntity(): Identite
+    public function getEntity(): Identite
     {
         $identite = $this->getUser()->getIdentite();
         if (!$identite) {
             $identite = new Identite();
         }
+
+        // Si aucune identite n'est trouvée, lancer une exception avec un message plus parlant
+        if ($identite === null) {
+            throw new HydrationException('Identite non trouvée pour l\'ID fourni.');
+        }
+
         return $identite;
     }
 

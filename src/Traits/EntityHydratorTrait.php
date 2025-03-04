@@ -76,9 +76,9 @@ trait EntityHydratorTrait
         );
     }
 
-
     /**
-     * Parse le payload JSON de la requête.
+     * Extrait toutes les données de la requête 
+     * (JSON, form-data, fichiers, paramètres GET et attributs de route).
      *
      * @param Request $request La requête HTTP
      * @return array Le tableau des données extraites
@@ -94,7 +94,13 @@ trait EntityHydratorTrait
         // Fichiers téléchargés
         $uploadedFiles = $this->getUploadedFiles($request);
 
-        return array_merge($jsonPayload, $formData, ['files' => $uploadedFiles]);
+        // Données GET (query parameters)
+        $queryParams = $request->query->all();
+
+        // Récupération de tous les attributs de la requête (ex: ID de la route, autres paramètres)
+        $attributes = $request->attributes->all();
+
+        return array_merge($jsonPayload, $formData, ['files' => $uploadedFiles], ['query' => $queryParams], ['attributes' => $attributes]);
     }
 
     /**

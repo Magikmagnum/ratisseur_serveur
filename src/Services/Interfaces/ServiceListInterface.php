@@ -10,8 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
  */
 interface ServiceListInterface
 {
-    public function liste(): array;
-    public function listeUtilisateur(): array;
+    public function getData(): array;
     public function detail(int $id): array;
     public function creer(Request $request): array;
     public function modifier(int $id, Request $request): array;

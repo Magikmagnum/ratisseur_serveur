@@ -5,6 +5,7 @@ namespace App\Services\Adresse;
 use App\Entity\Adresse;
 use App\Helpers\EntityHelper;
 use App\Traits\EntityHydratorTrait;
+use App\Exception\HydrationException;
 use App\Repository\AdresseRepository;
 use App\Traits\EntityCrudSingleTrait;
 use App\Controller\AbstractController;
@@ -71,9 +72,16 @@ class AdresseServices extends AbstractController implements ServiceInterface
     public function getEntity(): Adresse
     {
         $adresse = $this->getUser()->getadresse();
+
         if (!$adresse) {
             $adresse = new Adresse();
         }
+
+        // Si aucune adresse n'est trouvée, lancer une exception avec un message plus parlant
+        if ($adresse === null) {
+            throw new HydrationException('Adresse non trouvée pour l\'ID fourni.');
+        }
+
         return $adresse;
     }
 }

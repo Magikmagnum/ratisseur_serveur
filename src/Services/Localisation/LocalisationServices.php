@@ -4,9 +4,11 @@ namespace App\Services\Localisation;
 
 use App\Entity\Localisation;
 use App\Helpers\EntityHelper;
+use App\Traits\EntityFilterTrait;
 use App\Helpers\HttpResponseHelper;
 use App\Traits\EntityCrudListTrait;
 use App\Traits\EntityHydratorTrait;
+use App\Exception\HydrationException;
 use App\Controller\AbstractController;
 use App\Exception\ValidationException;
 use App\Repository\LocalisationRepository;
@@ -21,6 +23,7 @@ class LocalisationServices extends AbstractController implements ServiceListInte
 {
     use EntityHydratorTrait;
     use EntityCrudListTrait;
+    use EntityFilterTrait;
 
     private LocalisationRepository $localisationRepository;
     private CoordServices $coordServices;
@@ -58,7 +61,7 @@ class LocalisationServices extends AbstractController implements ServiceListInte
         return HttpResponseHelper::response(
             Response::HTTP_OK,
             $this->normalizer($locatisations)
-            
+
         );
     }
 
@@ -101,14 +104,21 @@ class LocalisationServices extends AbstractController implements ServiceListInte
     /**
      * @return Localisation
      */
-    public function getEntity(int $id = null): Localisation
+    public function getEntity(?int $id = null): Localisation
     {
         if ($id === null) {
             return new Localisation();
         }
 
-        $competence = $this->localisationRepository->findOneBy(["id" => $id]);
-        return $competence;
+        $localisation = $this->localisationRepository->findOneBy(["id" => $id]);
+
+        // Si aucune localisation n'est trouvée, lancer une exception avec un message plus parlant
+        if ($localisation === null) {
+            throw new HydrationException('Localisation non trouvée pour l\'ID fourni.');
+        }
+
+
+        return $localisation;
     }
 
     /**
@@ -120,11 +130,9 @@ class LocalisationServices extends AbstractController implements ServiceListInte
     private function normalizer(array $locations): array
     {
         $formattedLocations = [];
-
         foreach ($locations as $location) {
-            $formattedLocations[] = ['location' => $location];
+            $formattedLocations[] = ['id' => $location->getId(), 'location' => $location];
         }
-
         return $formattedLocations;
     }
 }

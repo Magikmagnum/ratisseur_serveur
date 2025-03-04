@@ -4,15 +4,17 @@ namespace App\Services\Competence;
 
 use App\Entity\Competences;
 use App\Helpers\EntityHelper;
+use App\Traits\EntityFilterTrait;
 use App\Helpers\ImageUploadHelper;
 use App\Helpers\HttpResponseHelper;
 use App\Traits\EntityCrudListTrait;
 use App\Traits\EntityHydratorTrait;
+use App\Exception\HydrationException;
+use App\Controller\AbstractController;
 use App\Exception\ValidationException;
 use App\Repository\CompetencesRepository;
 use Symfony\Component\HttpFoundation\Response;
 use App\Services\Interfaces\ServiceListInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 enum MessageError: string
 {
@@ -27,49 +29,23 @@ class CompetencesServices extends AbstractController implements ServiceListInter
 {
     use EntityHydratorTrait;
     use EntityCrudListTrait;
+    use EntityFilterTrait;
 
     const  CUSTOME_IMAGE_DIRECTORY = "images/competences";
     const  CUSTOME_IMAGE_NAME = "competences_";
-
     private ImageUploadHelper $ImageUploadHelper;
-    private CompetencesRepository $competencesRepository;
+    private CompetencesRepository $repository;
     private CompetencesListeServices $competencesListeServices;
     protected EntityHelper $entityHelper;
 
-
-
-    public function __construct(CompetencesRepository $competencesRepository, CompetencesListeServices $competencesListeServices, ImageUploadHelper $ImageUploadHelper, EntityHelper $entityHelper)
+    public function __construct(CompetencesRepository $repository, CompetencesListeServices $competencesListeServices, ImageUploadHelper $ImageUploadHelper, EntityHelper $entityHelper)
     {
-        $this->competencesRepository = $competencesRepository;
+        $this->repository = $repository;
         $this->ImageUploadHelper = $ImageUploadHelper;
         $this->competencesListeServices = $competencesListeServices;
         $this->entityHelper = $entityHelper;
     }
-
-    public function listeUtilisateur(): array
-    {
-        if (!$user = $this->getUser()) {
-            throw new ValidationException([], Response::HTTP_FORBIDDEN);
-        }
-
-        return HttpResponseHelper::response(
-            Response::HTTP_OK,
-            $this->competencesRepository->findBy(['user' => $user])
-        );
-    }
-
-    public function liste(): array
-    {
-        if (!$user = $this->getUser()) {
-            throw new ValidationException([], Response::HTTP_FORBIDDEN);
-        }
-
-        return HttpResponseHelper::response(
-            Response::HTTP_OK,
-            $this->competencesRepository->findAllExcepteUser($user)
-        );
-    }
-
+    
     /**
      * @param Competences $competence L'entité de type Competences à hydrater
      * @param array $data Le tableau des données à mapper
@@ -107,21 +83,19 @@ class CompetencesServices extends AbstractController implements ServiceListInter
      * @param ?int $id L'identifiant de la compétence à retourner. Si null, retourne une nouvelle.
      * @return Competences
      */
-    public function getEntity(int $id = null): Competences
+    public function getEntity(?int $id = null): Competences
     {
         if ($id === null) {
             return new Competences();
         }
 
-        $competence = $this->competencesRepository->findOneBy(["id" => $id]);
-        return $competence;
-    }
+        $competence = $this->repository->findOneBy(["id" => $id]);
 
-    /**
-     * @return Competences
-     */
-    private function beforDeleteEntity(Competences $competence): void
-    {
-        $this->ImageUploadHelper->delete($competence->getEnseigne(), self::CUSTOME_IMAGE_DIRECTORY);
+        // Si aucune compétence n'est trouvée, lancer une exception avec un message plus parlant
+        if ($competence === null) {
+            throw new HydrationException('Compétence non trouvée pour l\'ID fourni.');
+        }
+
+        return $competence;
     }
 }

@@ -2,10 +2,11 @@
 
 namespace App\Services\Adresse;
 
-use App\Helpers\EntityHelper;
 use App\Entity\Pays;
-use App\Exception\ValidationException;
+use App\Helpers\EntityHelper;
 use App\Repository\PaysRepository;
+use App\Exception\HydrationException;
+use App\Exception\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -40,6 +41,12 @@ class PaysServices extends AbstractController
 
             $this->entityHelper->save($pays, true);
         }
+
+        // Si aucune pays n'est trouvée, lancer une exception avec un message plus parlant
+        if ($pays === null) {
+            throw new HydrationException('Pays non trouvée pour l\'ID fourni.');
+        }
+
         return $pays;
     }
 }
