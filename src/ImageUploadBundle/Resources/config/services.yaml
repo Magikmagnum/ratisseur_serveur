@@ -1,4 +1,0 @@
-services:
-    ImageUploadBundle\Services\ImageUploadServices
-        autowire: true
-        autoconfigure: true

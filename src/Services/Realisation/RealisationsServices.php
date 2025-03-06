@@ -14,12 +14,6 @@ use App\Services\Interfaces\ServiceListInterface;
 use App\Traits\FilterType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-enum MessageError: string
-{
-    case NO_FILE = "No file uploaded";
-    case UPLOAD_FAILED = "File upload failed";
-}
-
 /**
  * @implements ServiceListInterface<Realisations>
  */

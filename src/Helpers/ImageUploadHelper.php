@@ -14,6 +14,7 @@ enum MessageErreur: string
     case SUPPRESSION_FICHIER_IMPOSSIBLE = 'Impossible de supprimer le fichier "%s".';
     case TELECHARGEMENT_ECHOUE = 'Le téléchargement du fichier a échoué : %s';
 }
+
 class ImageUploadHelper
 {
     /**

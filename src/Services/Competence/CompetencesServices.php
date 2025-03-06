@@ -12,12 +12,6 @@ use App\Controller\AbstractController;
 use App\Repository\CompetencesRepository;
 use App\Services\Interfaces\ServiceListInterface;
 
-enum MessageError: string
-{
-    case NO_FILE = "No file uploaded";
-    case UPLOAD_FAILED = "File upload failed";
-}
-
 /**
  * @implements ServiceListInterface<Competences>
  */
@@ -95,5 +89,13 @@ class CompetencesServices extends AbstractController implements ServiceListInter
         }
 
         return $competence;
+    }
+
+    /**
+     * @return Competences
+     */
+    private function beforDeleteEntity(Competences $competence): void
+    {
+        $this->ImageUploadHelper->delete($competence->getEnseigne(), self::CUSTOME_IMAGE_DIRECTORY);
     }
 }
