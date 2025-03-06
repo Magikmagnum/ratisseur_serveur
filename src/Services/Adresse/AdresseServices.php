@@ -4,7 +4,7 @@ namespace App\Services\Adresse;
 
 use App\Entity\Adresse;
 use App\Helpers\EntityHelper;
-use App\Traits\EntityHydratorTrait;
+use App\Traits\HttpRequestHydrator;
 use App\Exception\HydrationException;
 use App\Repository\AdresseRepository;
 use App\Traits\EntityCrudSingleTrait;
@@ -17,7 +17,7 @@ use App\Services\Interfaces\ServiceInterface;
  */
 class AdresseServices extends AbstractController implements ServiceInterface
 {
-    use EntityHydratorTrait;
+    use HttpRequestHydrator;
     use EntityCrudSingleTrait;
 
     private AdresseRepository $adresseRepository;

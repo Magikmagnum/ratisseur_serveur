@@ -10,10 +10,11 @@ use Symfony\Component\HttpFoundation\Response;
 
 enum FilterType: string
 {
+    case BY_ALL = 'filter_by_all';
     case BY_USER = 'filter_by_user';
     case BY_OTHER = 'filter_by_other_user';
-    case BY_ALL = 'filter_by_all';
-    case BY_OTHER_ENTITY_ID = 'filter_by_entity_id';
+    case BY_ENTITY_ID = 'filter_by_entity_id';
+    case BY_OTHER_ENTITY_ID = 'filter_by_other_entity_id';
 }
 
 /**
@@ -67,6 +68,7 @@ trait EntityFilterTrait
             FilterType::BY_OTHER => $repository->findAllExcepteUser($user),
             // Le repository de realisation, 
             FilterType::BY_OTHER_ENTITY_ID => $repository->findAllByOtherEntity($id),
+            FilterType::BY_ENTITY_ID => $repository->findOneBy(["id" => $id]),
             FilterType::BY_ALL => $repository->findAll(),
         };
     }

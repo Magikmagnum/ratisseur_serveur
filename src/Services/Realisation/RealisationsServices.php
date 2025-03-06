@@ -4,18 +4,14 @@ namespace App\Services\Realisation;
 
 use App\Entity\Realisations;
 use App\Helpers\EntityHelper;
-use App\Traits\EntityFilterTrait;
 use App\Helpers\ImageUploadHelper;
-use App\Helpers\HttpResponseHelper;
 use App\Traits\EntityCrudListTrait;
-use App\Traits\EntityHydratorTrait;
+use App\Traits\HttpRequestHydrator;
 use App\Exception\HydrationException;
-use App\Exception\ValidationException;
 use App\Repository\RealisationsRepository;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use App\Services\Competence\CompetencesServices;
 use App\Services\Interfaces\ServiceListInterface;
+use App\Traits\FilterType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 enum MessageError: string
@@ -29,9 +25,8 @@ enum MessageError: string
  */
 class RealisationsServices extends AbstractController implements ServiceListInterface
 {
-    use EntityHydratorTrait;
+    use HttpRequestHydrator;
     use EntityCrudListTrait;
-    use EntityFilterTrait;
 
     const  CUSTOME_IMAGE_DIRECTORY = "images/realisations";
     const  CUSTOME_IMAGE_NAME = "realisations_";

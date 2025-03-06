@@ -5,7 +5,7 @@ namespace App\Services\Identite;
 use App\Entity\Identite;
 use App\Helpers\EntityHelper;
 use App\Helpers\ImageUploadHelper;
-use App\Traits\EntityHydratorTrait;
+use App\Traits\HttpRequestHydrator;
 use App\Exception\HydrationException;
 use App\Traits\EntityCrudSingleTrait;
 use App\Services\Interfaces\ServiceInterface;
@@ -22,7 +22,7 @@ enum MessageError: string
  */
 class IdentiteServices extends AbstractController implements ServiceInterface
 {
-    use EntityHydratorTrait;
+    use HttpRequestHydrator;
     use EntityCrudSingleTrait;
 
     const  CUSTOME_IMAGE_DIRECTORY = "images/identites";

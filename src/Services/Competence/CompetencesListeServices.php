@@ -22,7 +22,10 @@ class CompetencesListeServices extends AbstractController
         $this->competencesListeRepository = $competencesListeRepository;
     }
 
-
+    /**
+     * @param ?int $id L'identifiant de la CompetencesListe à retourner. Si null, retourne une nouvelle.
+     * @return CompetencesListe
+     */
     public function getEntity(string $label): CompetencesListe
     {
         if (!$competenceListe = $this->competencesListeRepository->findOneBy(['label' => $label])) {

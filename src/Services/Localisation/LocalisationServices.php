@@ -4,10 +4,9 @@ namespace App\Services\Localisation;
 
 use App\Entity\Localisation;
 use App\Helpers\EntityHelper;
-use App\Traits\EntityFilterTrait;
 use App\Helpers\HttpResponseHelper;
 use App\Traits\EntityCrudListTrait;
-use App\Traits\EntityHydratorTrait;
+use App\Traits\HttpRequestHydrator;
 use App\Exception\HydrationException;
 use App\Controller\AbstractController;
 use App\Exception\ValidationException;
@@ -21,9 +20,8 @@ use App\Services\Interfaces\ServiceListInterface;
  */
 class LocalisationServices extends AbstractController implements ServiceListInterface
 {
-    use EntityHydratorTrait;
+    use HttpRequestHydrator;
     use EntityCrudListTrait;
-    use EntityFilterTrait;
 
     private LocalisationRepository $localisationRepository;
     private CoordServices $coordServices;

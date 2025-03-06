@@ -13,9 +13,9 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  * Gansa Diambote eric 
  * Le 17 janvier 2025
  * 
- * Documentation pour le trait EntityHydratorTrait
+ * Documentation pour le trait HttpRequestHydrator
  * 
- * Le trait EntityHydratorTrait fournit un ensemble d’outils pour hydrater des entités à partir des données extraites 
+ * Le trait HttpRequestHydrator fournit un ensemble d’outils pour hydrater des entités à partir des données extraites 
  * d’une requête HTTP. 
  * Il inclut des méthodes pour traiter les données JSON, les données de formulaire et les fichiers téléchargés.
  * 
@@ -47,7 +47,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  * - `mapDataToEntity` doit être implémentée par chaque classe qui utilise ce trait.
  * - Elle doit adapter les données à la structure de l’entité cible en prenant en compte les types et les validations.
  */
-trait EntityHydratorTrait
+trait HttpRequestHydrator
 {
     /**
      * Types MIME autorisés pour les fichiers téléchargés.

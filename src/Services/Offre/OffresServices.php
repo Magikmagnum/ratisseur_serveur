@@ -4,14 +4,10 @@ namespace App\Services\Offre;
 
 use App\Entity\Offres;
 use App\Helpers\EntityHelper;
-use App\Traits\EntityFilterTrait;
-use App\Helpers\HttpResponseHelper;
 use App\Traits\EntityCrudListTrait;
-use App\Traits\EntityHydratorTrait;
+use App\Traits\HttpRequestHydrator;
 use App\Repository\OffresRepository;
 use App\Exception\HydrationException;
-use App\Exception\ValidationException;
-use Symfony\Component\HttpFoundation\Response;
 use App\Services\Competence\CompetencesServices;
 use App\Services\Interfaces\ServiceListInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,9 +15,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class OffresServices extends AbstractController implements ServiceListInterface
 {
-    use EntityHydratorTrait;
+    use HttpRequestHydrator;
     use EntityCrudListTrait;
-    use EntityFilterTrait;
 
     private OffresRepository $offresRepository;
     private CompetencesServices $competencesServices;

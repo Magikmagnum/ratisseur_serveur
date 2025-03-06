@@ -4,16 +4,12 @@ namespace App\Services\Competence;
 
 use App\Entity\Competences;
 use App\Helpers\EntityHelper;
-use App\Traits\EntityFilterTrait;
 use App\Helpers\ImageUploadHelper;
-use App\Helpers\HttpResponseHelper;
 use App\Traits\EntityCrudListTrait;
-use App\Traits\EntityHydratorTrait;
+use App\Traits\HttpRequestHydrator;
 use App\Exception\HydrationException;
 use App\Controller\AbstractController;
-use App\Exception\ValidationException;
 use App\Repository\CompetencesRepository;
-use Symfony\Component\HttpFoundation\Response;
 use App\Services\Interfaces\ServiceListInterface;
 
 enum MessageError: string
@@ -27,9 +23,8 @@ enum MessageError: string
  */
 class CompetencesServices extends AbstractController implements ServiceListInterface
 {
-    use EntityHydratorTrait;
+    use HttpRequestHydrator;
     use EntityCrudListTrait;
-    use EntityFilterTrait;
 
     const  CUSTOME_IMAGE_DIRECTORY = "images/competences";
     const  CUSTOME_IMAGE_NAME = "competences_";
@@ -45,7 +40,7 @@ class CompetencesServices extends AbstractController implements ServiceListInter
         $this->competencesListeServices = $competencesListeServices;
         $this->entityHelper = $entityHelper;
     }
-    
+
     /**
      * @param Competences $competence L'entité de type Competences à hydrater
      * @param array $data Le tableau des données à mapper
@@ -53,6 +48,9 @@ class CompetencesServices extends AbstractController implements ServiceListInter
      */
     public function mapDataToEntity(object $competence, array $data): Competences
     {
+        if (!$competence instanceof Competences) {
+            throw new \InvalidArgumentException("L'objet doit être une instance de Competences.");
+        }
 
         // Assurez-vous que l'utilisateur est défini
         if (!$competence->getUser()) {
