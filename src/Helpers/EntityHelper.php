@@ -38,15 +38,12 @@ class EntityHelper
         $validationResults = $this->validator->validate($entity);
 
         if (count($validationResults) > 0) {
-            $validationErrors = array_map(static function ($violation) {
-                return [
-                    'field' => $violation->getPropertyPath(),
-                    'message' => $violation->getMessage(),
-                ];
-            }, iterator_to_array($validationResults));
 
+            $validationErrors = [];
+            foreach ($validationResults as $violation) {
+                $validationErrors[$violation->getPropertyPath()] = $violation->getMessage();
+            }
             $allErrors = $existingErrors ? array_merge($existingErrors, $validationErrors) : $validationErrors;
-
             return $this->buildErrorResponse(Response::HTTP_BAD_REQUEST, $allErrors);
         }
 
@@ -134,7 +131,7 @@ class EntityHelper
         return [
             'status' => $statusCode,
             'success' => false,
-            'errors' => $errors,
+            'data' => $errors,
         ];
     }
 

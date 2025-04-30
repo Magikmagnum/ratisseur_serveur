@@ -8,12 +8,12 @@ use App\Traits\EntityCrudListTrait;
 use App\Traits\HttpRequestHydrator;
 use App\Repository\OffresRepository;
 use App\Exception\HydrationException;
+use App\Services\ServiceListInterfaces;
 use App\Services\Competence\CompetencesServices;
-use App\Services\Interfaces\ServiceListInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 
-class OffresServices extends AbstractController implements ServiceListInterface
+class OffresServices extends AbstractController implements ServiceListInterfaces
 {
     use HttpRequestHydrator;
     use EntityCrudListTrait;

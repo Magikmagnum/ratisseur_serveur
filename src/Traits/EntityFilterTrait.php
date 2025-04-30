@@ -39,7 +39,7 @@ trait EntityFilterTrait
      * 
      * @throws ValidationException Si l'utilisateur n'est pas authentifié.
      */
-    public function getData(FilterType $type = FilterType::BY_ALL, ?int $id = null): array
+    public function getData(FilterType $type = FilterType::BY_ALL, ?int $id = null, ?array $criteria = []): array
     {
         if (!$user = $this->getUser()) {
             throw new ValidationException([], Response::HTTP_FORBIDDEN);
@@ -61,6 +61,7 @@ trait EntityFilterTrait
      */
     private function fetchData(FilterType $type, ?User $user, ?int $id = null): array
     {
+        /** @var ServiceEntityRepository $repository */
         $repository = $this->repository;
 
         return match ($type) {

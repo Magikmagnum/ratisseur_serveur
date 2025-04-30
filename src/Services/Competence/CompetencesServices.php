@@ -10,12 +10,12 @@ use App\Traits\HttpRequestHydrator;
 use App\Exception\HydrationException;
 use App\Controller\AbstractController;
 use App\Repository\CompetencesRepository;
-use App\Services\Interfaces\ServiceListInterface;
+use App\Services\ServiceListInterfaces;
 
 /**
- * @implements ServiceListInterface<Competences>
+ * @implements ServiceListInterfaces<Competences>
  */
-class CompetencesServices extends AbstractController implements ServiceListInterface
+class CompetencesServices extends AbstractController implements ServiceListInterfaces
 {
     use HttpRequestHydrator;
     use EntityCrudListTrait;

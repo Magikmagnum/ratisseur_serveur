@@ -10,12 +10,11 @@ use App\Repository\AdresseRepository;
 use App\Traits\EntityCrudSingleTrait;
 use App\Controller\AbstractController;
 use App\Services\Adresse\VilleServices;
-use App\Services\Interfaces\ServiceInterface;
-
+use App\Services\ServiceInterfaces;
 /**
- * @implements ServiceInterface<Adresse>
+ * @implements ServiceInterfaces<Adresse>
  */
-class AdresseServices extends AbstractController implements ServiceInterface
+class AdresseServices extends AbstractController implements ServiceInterfaces
 {
     use HttpRequestHydrator;
     use EntityCrudSingleTrait;

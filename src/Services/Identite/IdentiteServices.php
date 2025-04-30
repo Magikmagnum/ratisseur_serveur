@@ -8,13 +8,13 @@ use App\Helpers\ImageUploadHelper;
 use App\Traits\HttpRequestHydrator;
 use App\Exception\HydrationException;
 use App\Traits\EntityCrudSingleTrait;
-use App\Services\Interfaces\ServiceInterface;
+use App\Services\ServiceInterfaces;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
- * @implements ServiceInterface<Identite>
+ * @implements ServiceInterfaces<Identite>
  */
-class IdentiteServices extends AbstractController implements ServiceInterface
+class IdentiteServices extends AbstractController implements ServiceInterfaces
 {
     use HttpRequestHydrator;
     use EntityCrudSingleTrait;

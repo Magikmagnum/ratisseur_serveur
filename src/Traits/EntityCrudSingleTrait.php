@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 trait EntityCrudSingleTrait
 {
+    use HttpRequestHydrator;
     use EntityFilterTrait;
     
     public function creer(Request $request): array

@@ -2,22 +2,22 @@
 
 namespace App\Services\Realisation;
 
+use App\Traits\FilterType;
 use App\Entity\Realisations;
 use App\Helpers\EntityHelper;
 use App\Helpers\ImageUploadHelper;
 use App\Traits\EntityCrudListTrait;
 use App\Traits\HttpRequestHydrator;
 use App\Exception\HydrationException;
+use App\Services\ServiceListInterfaces;
 use App\Repository\RealisationsRepository;
 use App\Services\Competence\CompetencesServices;
-use App\Services\Interfaces\ServiceListInterface;
-use App\Traits\FilterType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
- * @implements ServiceListInterface<Realisations>
+ * @implements ServiceListInterfaces<Realisations>
  */
-class RealisationsServices extends AbstractController implements ServiceListInterface
+class RealisationsServices extends AbstractController implements ServiceListInterfaces
 {
     use HttpRequestHydrator;
     use EntityCrudListTrait;

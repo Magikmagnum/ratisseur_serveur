@@ -13,53 +13,55 @@ use App\Exception\ValidationException;
 use App\Repository\LocalisationRepository;
 use App\Services\Localisation\CoordServices;
 use Symfony\Component\HttpFoundation\Response;
-use App\Services\Interfaces\ServiceListInterface;
+use App\Services\ServiceListInterfaces;
+use App\Traits\FilterType;
 
 /**
- * @implements ServiceListInterface<Localisation>
+ * @implements ServiceListInterfaces<Localisation>
  */
-class LocalisationServices extends AbstractController implements ServiceListInterface
+class LocalisationServices extends AbstractController implements ServiceListInterfaces
 {
     use HttpRequestHydrator;
     use EntityCrudListTrait;
 
-    private LocalisationRepository $localisationRepository;
+    private LocalisationRepository $repository;
     private CoordServices $coordServices;
     protected EntityHelper $entityHelper;
 
-    public function __construct(LocalisationRepository $localisationRepository, CoordServices $coordServices, EntityHelper $entityHelper)
+    public function __construct(LocalisationRepository $repository, CoordServices $coordServices, EntityHelper $entityHelper)
     {
-        $this->localisationRepository = $localisationRepository;
+        $this->repository = $repository;
         $this->coordServices = $coordServices;
         $this->entityHelper = $entityHelper;
     }
 
-    public function listeUtilisateur(): array
+     /**
+     * Récupère les données en fonction du type spécifié.
+     *
+     * @param FilterType $type Le type de filtre a appliquer (`BY_USER`, `BY_OTHER`, `BY_ALL`).
+     * @param ?int $id l'id de l'entity à filtrer
+     * @param array $criteria Tableau de critères supplémentaires à appliquer au filtre.
+     * @return array Un tableau contenant la liste des entités filtrées.
+     * 
+     * @throws ValidationException Si l'utilisateur n'est pas authentifié.
+     */
+    public function getData(FilterType $type = FilterType::BY_ALL, ?int $id = null, ?array $criteria = []): array
     {
         if (!$user = $this->getUser()) {
             throw new ValidationException([], Response::HTTP_FORBIDDEN);
         }
 
-        $locatisations  = $this->localisationRepository->findBy(['user' => $user]);
-
         return HttpResponseHelper::response(
             Response::HTTP_OK,
-            $this->normalizer($locatisations)
+            $this->normalizer(
+                $this->fetchData($type, $user, $id)
+            )
+
         );
-    }
-
-    public function liste(): array
-    {
-        if (!$user = $this->getUser()) {
-            throw new ValidationException([], Response::HTTP_FORBIDDEN);
-        }
-
-        $locatisations = $this->localisationRepository->findAllExcepteUser($user);
 
         return HttpResponseHelper::response(
             Response::HTTP_OK,
-            $this->normalizer($locatisations)
-
+            
         );
     }
 
@@ -108,7 +110,7 @@ class LocalisationServices extends AbstractController implements ServiceListInte
             return new Localisation();
         }
 
-        $localisation = $this->localisationRepository->findOneBy(["id" => $id]);
+        $localisation = $this->repository->findOneBy(["id" => $id]);
 
         // Si aucune localisation n'est trouvée, lancer une exception avec un message plus parlant
         if ($localisation === null) {
