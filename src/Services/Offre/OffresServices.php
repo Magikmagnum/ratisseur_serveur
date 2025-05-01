@@ -4,22 +4,18 @@ namespace App\Services\Offre;
 
 use App\Entity\Offres;
 use App\Helpers\EntityHelper;
-use App\Helpers\HttpResponseHelper;
 use App\Traits\EntityCrudListTrait;
-use App\Traits\EntityHydratorTrait;
+use App\Traits\HttpRequestHydrator;
 use App\Repository\OffresRepository;
-use App\Exception\ValidationException;
-use Symfony\Component\HttpFoundation\Response;
-use App\Services\Interfaces\ServiceListInterface;
+use App\Exception\HydrationException;
+use App\Services\ServiceListInterfaces;
 use App\Services\Competence\CompetencesServices;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-/**
- * @implements ServiceListInterface<Offres>
- */
-class OffresServices extends AbstractController implements ServiceListInterface
+
+class OffresServices extends AbstractController implements ServiceListInterfaces
 {
-    use EntityHydratorTrait;
+    use HttpRequestHydrator;
     use EntityCrudListTrait;
 
     private OffresRepository $offresRepository;
@@ -31,30 +27,6 @@ class OffresServices extends AbstractController implements ServiceListInterface
         $this->offresRepository = $offresRepository;
         $this->entityHelper = $entityHelper;
         $this->competencesServices = $competencesServices;
-    }
-
-    public function listeUtilisateur(): array
-    {
-        if (!$user = $this->getUser()) {
-            throw new ValidationException([], Response::HTTP_FORBIDDEN);
-        }
-
-        return HttpResponseHelper::response(
-            Response::HTTP_OK,
-            $this->offresRepository->findBy(['user' => $user])
-        );
-    }
-
-    public function liste(): array
-    {
-        if (!$user = $this->getUser()) {
-            throw new ValidationException([], Response::HTTP_FORBIDDEN);
-        }
-
-        return HttpResponseHelper::response(
-            Response::HTTP_OK,
-            $this->offresRepository->findAllExcepteUser($user)
-        );
     }
 
     /**
@@ -93,6 +65,13 @@ class OffresServices extends AbstractController implements ServiceListInterface
         }
 
         $offre = $this->offresRepository->findOneBy(["id" => $id]);
+
+        
+        // Si aucune localisation n'est trouvée, lancer une exception avec un message plus parlant
+        if ($offre === null) {
+            throw new HydrationException('Offre non trouvée pour l\'ID fourni.');
+        }
+
         return $offre;
     }
 }

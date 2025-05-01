@@ -1,0 +1,3 @@
+@startuml Test Classe
+Classe01 -- Classe02
+@end

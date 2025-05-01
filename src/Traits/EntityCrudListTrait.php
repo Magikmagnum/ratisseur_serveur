@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use App\Traits\EntityFilterTrait;
 use App\Helpers\HttpResponseHelper;
 use App\Exception\ValidationException;
 use Symfony\Component\HttpFoundation\Request;
@@ -9,8 +10,11 @@ use Symfony\Component\HttpFoundation\Response;
 
 trait EntityCrudListTrait
 {
+    use HttpRequestHydrator;
+    use EntityFilterTrait;
+
     public function creer(Request $request): array
-    {
+    {        
         $entity = $this->hydrateEntity($this->getEntity(), $request);
         $this->entityHelper->save($entity, true);
         return HttpResponseHelper::response(Response::HTTP_CREATED, $entity);

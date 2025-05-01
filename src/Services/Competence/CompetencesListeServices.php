@@ -4,6 +4,7 @@ namespace App\Services\Competence;
 
 use App\Helpers\EntityHelper;
 use App\Entity\CompetencesListe;
+use App\Exception\HydrationException;
 use App\Exception\ValidationException;
 use App\Repository\CompetencesListeRepository;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,7 +22,10 @@ class CompetencesListeServices extends AbstractController
         $this->competencesListeRepository = $competencesListeRepository;
     }
 
-
+    /**
+     * @param ?int $id L'identifiant de la CompetencesListe à retourner. Si null, retourne une nouvelle.
+     * @return CompetencesListe
+     */
     public function getEntity(string $label): CompetencesListe
     {
         if (!$competenceListe = $this->competencesListeRepository->findOneBy(['label' => $label])) {
@@ -34,6 +38,12 @@ class CompetencesListeServices extends AbstractController
 
             $this->entityHelper->save($competenceListe, true);
         }
+
+        // Si aucune competenceListe n'est trouvée, lancer une exception avec un message plus parlant
+        if ($competenceListe === null) {
+            throw new HydrationException('Nom de competence non trouvée pour l\'ID fourni.');
+        }
+
         return $competenceListe;
     }
 }

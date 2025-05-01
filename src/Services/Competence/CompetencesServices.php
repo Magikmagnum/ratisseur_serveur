@@ -5,69 +5,34 @@ namespace App\Services\Competence;
 use App\Entity\Competences;
 use App\Helpers\EntityHelper;
 use App\Helpers\ImageUploadHelper;
-use App\Helpers\HttpResponseHelper;
 use App\Traits\EntityCrudListTrait;
-use App\Traits\EntityHydratorTrait;
-use App\Exception\ValidationException;
+use App\Traits\HttpRequestHydrator;
+use App\Exception\HydrationException;
+use App\Controller\AbstractController;
 use App\Repository\CompetencesRepository;
-use Symfony\Component\HttpFoundation\Response;
-use App\Services\interfaces\ServiceListInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
-enum MessageError: string
-{
-    case NO_FILE = "No file uploaded";
-    case UPLOAD_FAILED = "File upload failed";
-}
+use App\Services\ServiceListInterfaces;
 
 /**
- * @implements ServiceListInterface<Competences>
+ * @implements ServiceListInterfaces<Competences>
  */
-class CompetencesServices extends AbstractController implements ServiceListInterface
+class CompetencesServices extends AbstractController implements ServiceListInterfaces
 {
-    use EntityHydratorTrait;
+    use HttpRequestHydrator;
     use EntityCrudListTrait;
 
     const  CUSTOME_IMAGE_DIRECTORY = "images/competences";
     const  CUSTOME_IMAGE_NAME = "competences_";
-
     private ImageUploadHelper $ImageUploadHelper;
-    private CompetencesRepository $competencesRepository;
+    private CompetencesRepository $repository;
     private CompetencesListeServices $competencesListeServices;
     protected EntityHelper $entityHelper;
 
-
-
-    public function __construct(CompetencesRepository $competencesRepository, CompetencesListeServices $competencesListeServices, ImageUploadHelper $ImageUploadHelper, EntityHelper $entityHelper)
+    public function __construct(CompetencesRepository $repository, CompetencesListeServices $competencesListeServices, ImageUploadHelper $ImageUploadHelper, EntityHelper $entityHelper)
     {
-        $this->competencesRepository = $competencesRepository;
+        $this->repository = $repository;
         $this->ImageUploadHelper = $ImageUploadHelper;
         $this->competencesListeServices = $competencesListeServices;
         $this->entityHelper = $entityHelper;
-    }
-
-    public function listeUtilisateur(): array
-    {
-        if (!$user = $this->getUser()) {
-            throw new ValidationException([], Response::HTTP_FORBIDDEN);
-        }
-
-        return HttpResponseHelper::response(
-            Response::HTTP_OK,
-            $this->competencesRepository->findBy(['user' => $user])
-        );
-    }
-
-    public function liste(): array
-    {
-        if (!$user = $this->getUser()) {
-            throw new ValidationException([], Response::HTTP_FORBIDDEN);
-        }
-
-        return HttpResponseHelper::response(
-            Response::HTTP_OK,
-            $this->competencesRepository->findAllExcepteUser($user)
-        );
     }
 
     /**
@@ -77,6 +42,9 @@ class CompetencesServices extends AbstractController implements ServiceListInter
      */
     public function mapDataToEntity(object $competence, array $data): Competences
     {
+        if (!$competence instanceof Competences) {
+            throw new \InvalidArgumentException("L'objet doit être une instance de Competences.");
+        }
 
         // Assurez-vous que l'utilisateur est défini
         if (!$competence->getUser()) {
@@ -113,7 +81,13 @@ class CompetencesServices extends AbstractController implements ServiceListInter
             return new Competences();
         }
 
-        $competence = $this->competencesRepository->findOneBy(["id" => $id]);
+        $competence = $this->repository->findOneBy(["id" => $id]);
+
+        // Si aucune compétence n'est trouvée, lancer une exception avec un message plus parlant
+        if ($competence === null) {
+            throw new HydrationException('Compétence non trouvée pour l\'ID fourni.');
+        }
+
         return $competence;
     }
 

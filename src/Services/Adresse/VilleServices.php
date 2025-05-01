@@ -2,10 +2,11 @@
 
 namespace App\Services\Adresse;
 
-use App\Helpers\EntityHelper;
 use App\Entity\Ville;
-use App\Exception\ValidationException;
+use App\Helpers\EntityHelper;
 use App\Repository\VilleRepository;
+use App\Exception\HydrationException;
+use App\Exception\ValidationException;
 use App\Services\Adresse\PaysServices;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -23,7 +24,6 @@ class VilleServices extends AbstractController
         $this->villeRepository = $villeRepository;
         $this->paysServices = $paysServices;
     }
-
 
     /**
      * Récupère ou crée une entité Ville en fonction des critères fournis.
@@ -74,6 +74,11 @@ class VilleServices extends AbstractController
 
             // Sauvegarde de la nouvelle ville
             $this->entityHelper->save($ville, true);
+        }
+
+        // Si aucune ville n'est trouvée, lancer une exception avec un message plus parlant
+        if ($ville === null) {
+            throw new HydrationException('Ville non trouvée pour l\'ID fourni.');
         }
 
         return $ville;

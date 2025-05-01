@@ -15,7 +15,7 @@ class HttpResponseHelper
      * @param string|null $message
      * @return 
      */
-    public static function response(int $statusCode, $data = [], string $message = null)
+    public static function response(int $statusCode, $data = [], ?string $message = null)
     {
         switch ($statusCode) {
 

@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Traits\FilterType;
 
 #[Route('offres')]
 class OffresController extends AbstractController
@@ -15,14 +16,14 @@ class OffresController extends AbstractController
     #[Route('', name: 'offres_index', methods: ['GET'])]
     public function index(OffresServices $offresServices): JsonResponse
     {
-        $response =  $offresServices->liste();
+        $response =  $offresServices->getData(FilterType::BY_OTHER);;
         return $this->json($response, $response['status'], [], ['groups' => 'read:offre:list:user']);
     }
 
     #[Route('/user', name: 'offres_user_index', methods: ['GET'])]
     public function index_user(OffresServices $offresServices): JsonResponse
     {
-        $response =  $offresServices->listeUtilisateur();
+        $response =  $offresServices->getData(FilterType::BY_USER);
         return $this->json($response, $response['status'], [], ['groups' => 'read:offre:list:user']);
     }
 

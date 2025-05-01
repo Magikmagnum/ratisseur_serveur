@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\RealisationsRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -14,20 +16,20 @@ class Realisations
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['read:realisation:list', 'read:realisation:item'])]
+    #[Groups(['read:realisation:list', 'read:realisation:item', 'read:realisation:list:user'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: "Le champ 'label' ne doit pas être vide.")]
-    #[Groups(['read:realisation:list', 'read:realisation:item'])]
+    #[Groups(['read:realisation:list', 'read:realisation:item', 'read:realisation:list:user'])]
     private ?string $label = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups(['read:realisation:list', 'read:realisation:item'])]
+    #[Groups(['read:realisation:list', 'read:realisation:item', 'read:realisation:list:user'])]
     private ?string $description = null;
 
     #[ORM\Column]
-    #[Groups(['read:realisation:list', 'read:realisation:item'])]
+    #[Groups(['read:realisation:list', 'read:realisation:item', 'read:realisation:list:user'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
@@ -41,11 +43,18 @@ class Realisations
     #[ORM\ManyToOne(inversedBy: 'realisation')]
     private ?Experiences $experience = null;
 
+    /**
+     * @var Collection<int, Medias>
+     */
+    #[ORM\OneToMany(targetEntity: Medias::class, mappedBy: 'realisation')]
+    private Collection $medias;
+
     // Ajout du constructeur
     public function __construct()
     {
         // Convertir la chaîne de date en objet DateTimeImmutable
         $this->setCreatedAt(new \DateTimeImmutable());
+        $this->medias = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -121,6 +130,36 @@ class Realisations
     public function setExperience(?Experiences $experience): self
     {
         $this->experience = $experience;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Medias>
+     */
+    public function getMedias(): Collection
+    {
+        return $this->medias;
+    }
+
+    public function addMedia(Medias $media): static
+    {
+        if (!$this->medias->contains($media)) {
+            $this->medias->add($media);
+            $media->setRealisation($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMedia(Medias $media): static
+    {
+        if ($this->medias->removeElement($media)) {
+            // set the owning side to null (unless already changed)
+            if ($media->getRealisation() === $this) {
+                $media->setRealisation(null);
+            }
+        }
 
         return $this;
     }

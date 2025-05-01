@@ -5,23 +5,18 @@ namespace App\Services\Identite;
 use App\Entity\Identite;
 use App\Helpers\EntityHelper;
 use App\Helpers\ImageUploadHelper;
-use App\Services\interfaces\ServiceInterface;
-use App\Traits\EntityHydratorTrait;
+use App\Traits\HttpRequestHydrator;
+use App\Exception\HydrationException;
 use App\Traits\EntityCrudSingleTrait;
+use App\Services\ServiceInterfaces;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-enum MessageError: string
-{
-    case NO_FILE = "No file uploaded";
-    case UPLOAD_FAILED = "File upload failed";
-}
-
 /**
- * @implements ServiceInterface<Identite>
+ * @implements ServiceInterfaces<Identite>
  */
-class IdentiteServices extends AbstractController implements ServiceInterface
+class IdentiteServices extends AbstractController implements ServiceInterfaces
 {
-    use EntityHydratorTrait;
+    use HttpRequestHydrator;
     use EntityCrudSingleTrait;
 
     const  CUSTOME_IMAGE_DIRECTORY = "images/identites";
@@ -86,6 +81,12 @@ class IdentiteServices extends AbstractController implements ServiceInterface
         if (!$identite) {
             $identite = new Identite();
         }
+
+        // Si aucune identite n'est trouvée, lancer une exception avec un message plus parlant
+        if ($identite === null) {
+            throw new HydrationException('Identite non trouvée pour l\'ID fourni.');
+        }
+
         return $identite;
     }
 

@@ -2,18 +2,22 @@
 
 namespace App\Entity;
 
-use App\Repository\UserRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
+use App\Repository\UserRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
-
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
+#[UniqueEntity(
+    fields: ['email'],
+    message: "Cette adresse e-mail est déjà utilisée."
+)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -97,6 +101,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Offres::class, mappedBy: 'user', orphanRemoval: true)]
     private Collection $offres;
 
+    /**
+     * @var Collection<int, Localisation>
+     */
+    #[ORM\OneToMany(targetEntity: Localisation::class, mappedBy: 'user', orphanRemoval: true)]
+    private Collection $localisations;
+
     public function __construct()
     {
         $this->competences = new ArrayCollection();
@@ -104,6 +114,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->experiences = new ArrayCollection();
         $this->yes = new ArrayCollection();
         $this->offres = new ArrayCollection();
+        $this->localisations = new ArrayCollection();
     }
 
 
@@ -378,6 +389,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($offre->getUser() === $this) {
                 $offre->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Localisation>
+     */
+    public function getLocalisations(): Collection
+    {
+        return $this->localisations;
+    }
+
+    public function addLocalisation(Localisation $localisation): static
+    {
+        if (!$this->localisations->contains($localisation)) {
+            $this->localisations->add($localisation);
+            $localisation->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLocalisation(Localisation $localisation): static
+    {
+        if ($this->localisations->removeElement($localisation)) {
+            // set the owning side to null (unless already changed)
+            if ($localisation->getUser() === $this) {
+                $localisation->setUser(null);
             }
         }
 

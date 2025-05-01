@@ -4,19 +4,19 @@ namespace App\Services\Adresse;
 
 use App\Entity\Adresse;
 use App\Helpers\EntityHelper;
-use App\Traits\EntityHydratorTrait;
+use App\Traits\HttpRequestHydrator;
+use App\Exception\HydrationException;
 use App\Repository\AdresseRepository;
 use App\Traits\EntityCrudSingleTrait;
 use App\Controller\AbstractController;
 use App\Services\Adresse\VilleServices;
-use App\Services\Interfaces\ServicesInterface;
-
+use App\Services\ServiceInterfaces;
 /**
- * @implements ServicesInterface<Adresse>
+ * @implements ServiceInterfaces<Adresse>
  */
-class AdresseServices extends AbstractController implements ServicesInterface
+class AdresseServices extends AbstractController implements ServiceInterfaces
 {
-    use EntityHydratorTrait;
+    use HttpRequestHydrator;
     use EntityCrudSingleTrait;
 
     private AdresseRepository $adresseRepository;
@@ -39,9 +39,6 @@ class AdresseServices extends AbstractController implements ServicesInterface
      */
     public function mapDataToEntity(Object $adresse, array $data): Adresse
     {
-        $user = $this->getUser();
-        $adresseUser = $adresse->getUser();
-
         // Assurez-vous que l'utilisateur est défini
         if (!$adresse->getId()) {
             $adresse->addUser($this->getUser());
@@ -74,9 +71,16 @@ class AdresseServices extends AbstractController implements ServicesInterface
     public function getEntity(): Adresse
     {
         $adresse = $this->getUser()->getadresse();
+
         if (!$adresse) {
             $adresse = new Adresse();
         }
+
+        // Si aucune adresse n'est trouvée, lancer une exception avec un message plus parlant
+        if ($adresse === null) {
+            throw new HydrationException('Adresse non trouvée pour l\'ID fourni.');
+        }
+
         return $adresse;
     }
 }

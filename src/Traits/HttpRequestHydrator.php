@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use App\Exception\HydrationException;
+use Symfony\Component\Console\Helper\Dumper;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -12,9 +13,9 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  * Gansa Diambote eric 
  * Le 17 janvier 2025
  * 
- * Documentation pour le trait EntityHydratorTrait
+ * Documentation pour le trait HttpRequestHydrator
  * 
- * Le trait EntityHydratorTrait fournit un ensemble d’outils pour hydrater des entités à partir des données extraites 
+ * Le trait HttpRequestHydrator fournit un ensemble d’outils pour hydrater des entités à partir des données extraites 
  * d’une requête HTTP. 
  * Il inclut des méthodes pour traiter les données JSON, les données de formulaire et les fichiers téléchargés.
  * 
@@ -46,7 +47,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  * - `mapDataToEntity` doit être implémentée par chaque classe qui utilise ce trait.
  * - Elle doit adapter les données à la structure de l’entité cible en prenant en compte les types et les validations.
  */
-trait EntityHydratorTrait
+trait HttpRequestHydrator
 {
     /**
      * Types MIME autorisés pour les fichiers téléchargés.
@@ -75,9 +76,9 @@ trait EntityHydratorTrait
         );
     }
 
-
     /**
-     * Parse le payload JSON de la requête.
+     * Extrait toutes les données de la requête 
+     * (JSON, form-data, fichiers, paramètres GET et attributs de route).
      *
      * @param Request $request La requête HTTP
      * @return array Le tableau des données extraites
@@ -93,8 +94,13 @@ trait EntityHydratorTrait
         // Fichiers téléchargés
         $uploadedFiles = $this->getUploadedFiles($request);
 
-        // Fusionner les données
-        return array_merge($jsonPayload, $formData, ['files' => $uploadedFiles]);
+        // Données GET (query parameters)
+        $queryParams = $request->query->all();
+
+        // Récupération de tous les attributs de la requête (ex: ID de la route, autres paramètres)
+        $attributes = $request->attributes->all();
+
+        return array_merge($jsonPayload, $formData, ['files' => $uploadedFiles], ['query' => $queryParams], ['attributes' => $attributes]);
     }
 
     /**
